@@ -323,7 +323,7 @@
             document.getElementById('stepLabel').textContent = `Paso ${paso + 1} de 3 · ${titulos[paso]}`;
             [1,2,3].forEach((n, i) => document.getElementById(`progress${n}`).className = i <= paso ? (i < paso ? 'done' : 'active') : '');
             document.getElementById('backStep').disabled = paso === 0;
-            document.getElementById('nextStep').textContent = paso === 2 ? 'Agregar trabajador' : 'Siguiente';
+            document.getElementById('nextStep').textContent = (alcanceDatos === 'global' ? paso === 1 : paso === 2) ? 'Agregar trabajador' : 'Siguiente';
             const borrador = document.getElementById('draftSummary');
             if (paso > 0) {
                 borrador.style.display = 'flex';
@@ -336,7 +336,7 @@
                 contenido.innerHTML = '<label for="workerCurp">CURP</label><input id="workerCurp" class="step-input" type="text" autocomplete="off" placeholder="18 caracteres" maxlength="18" autocapitalize="characters">';
                 const input = document.getElementById('workerCurp'); input.value = captura.curp;
                 input.addEventListener('input', () => { input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,18); });
-            } else {
+            } else if (alcanceDatos !== 'global') {
                 contenido.innerHTML = `<label for="workerRole">Puesto</label><select id="workerRole" class="step-input"><option value="" disabled>Selecciona un puesto</option>${PUESTOS_COMUNES.map(p => `<option value="${p}">${p}</option>`).join('')}</select><p class="hint" style="margin:8px 0 0">Toca la casilla para desplegar las 6 opciones.</p>`;
                 document.getElementById('workerRole').value = captura.puesto;
             }
@@ -352,10 +352,13 @@
             if (paso === 1) {
                 const curp = document.getElementById('workerCurp').value.trim().toUpperCase();
                 if (!/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/.test(curp)) { alert('Verifica la CURP: debe tener 18 caracteres y un formato válido.'); document.getElementById('workerCurp').focus(); return; }
-                captura.curp = curp; captura.puesto = 'TÉCNICO EN MANTENIMIENTO'; paso = 2; mostrarPaso(true); return;
+                captura.curp = curp;
+                if (alcanceDatos === 'global') { captura.puesto=document.getElementById('globalRole').value || 'TÉCNICO EN MANTENIMIENTO'; trabajadores.push({...captura}); ineFilesPorTrabajador.push(null); captura={nombre:'',curp:'',puesto:'TÉCNICO EN MANTENIMIENTO'}; paso=0; renderizarTrabajadores(); mostrarPaso(true); return; }
+                captura.puesto = 'TÉCNICO EN MANTENIMIENTO'; paso = 2; mostrarPaso(true); return;
             }
-            captura.puesto = document.getElementById('workerRole').value || 'TÉCNICO EN MANTENIMIENTO';
+            captura.puesto = alcanceDatos === 'global' ? (document.getElementById('globalRole').value || 'TÉCNICO EN MANTENIMIENTO') : (document.getElementById('workerRole').value || 'TÉCNICO EN MANTENIMIENTO');
             trabajadores.push({...captura});
+            ineFilesPorTrabajador.push(null);
             captura = { nombre: '', curp: '', puesto: 'TÉCNICO EN MANTENIMIENTO' };
             paso = 0; renderizarTrabajadores(); mostrarPaso(true);
         }
@@ -367,7 +370,29 @@
             paso--; mostrarPaso(true);
         }
 
-        function eliminarTrabajador(indice) { trabajadores.splice(indice, 1); renderizarTrabajadores(); }
+        function eliminarTrabajador(indice) { trabajadores.splice(indice, 1); ineFilesPorTrabajador.splice(indice,1); renderizarTrabajadores(); }
+
+        function leerComoDataURL(file) { return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=reject; r.readAsDataURL(file); }); }
+        async function procesarINEs() {
+            const files=Array.from(document.getElementById('ineFiles').files || []), status=document.getElementById('ocrStatus'), preview=document.getElementById('inePreview');
+            if (!files.length) { alert('Selecciona al menos una fotografía de INE.'); return; }
+            status.textContent='Procesando imágenes localmente…'; preview.innerHTML='';
+            for (let i=0;i<files.length;i++) {
+                const file=files[i]; if (!file.type.startsWith('image/')) continue;
+                const url=await leerComoDataURL(file); let raw='';
+                try { if (window.Tesseract) { const result=await Tesseract.recognize(url,'spa+eng',{logger:m=>{if(m.status==='recognizing text')status.textContent='Leyendo INE '+(i+1)+'/'+files.length+': '+Math.round((m.progress||0)*100)+'%';}}); raw=result.data.text||''; } } catch(e) { console.warn('OCR falló',e); }
+                const upper=raw.toUpperCase(), matches=upper.match(/[A-Z0-9]{18}/g)||[], curp=matches.find(x=>/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/.test(x))||'';
+                const lines=upper.split(/\r?\n/).map(x=>x.trim()).filter(x=>x.length>5);
+                const nombre=lines.find(x=>/^[A-ZÁÉÍÓÚÑ ]{8,}$/.test(x)&&!/MEXICO|INSTITUTO|ELECTORAL|NACIONAL|CREDENCIAL|VOTAR/.test(x))||'';
+                const puesto=alcanceDatos==='global'?(document.getElementById('globalRole').value):'TÉCNICO EN MANTENIMIENTO';
+                trabajadores.push({nombre:nombre,curp:curp,puesto:puesto}); ineFilesPorTrabajador.push(file);
+                const card=document.createElement('div'); card.className='ine-item'; const img=document.createElement('img'); img.src=url; img.alt='Vista previa de INE';
+                const info=document.createElement('div'); info.textContent='INE '+(i+1)+': '+(nombre||'Nombre por revisar')+' · CURP: '+(curp||'No detectada'); card.append(img,info); preview.appendChild(card);
+            }
+            renderizarTrabajadores(); status.textContent=files.length+' imagen(es) procesada(s). Verifica y corrige los datos detectados antes de generar.';
+            document.getElementById('workerEntry').classList.remove('hidden');
+            if (trabajadores.some(t=>!t.nombre||!t.curp)) alert('El OCR no pudo leer todos los datos. Completa o corrige nombre y CURP manualmente antes de generar.');
+        }
 
         function generarDocumentos() {
             const fInicio = obtenerDesgloseFecha(document.getElementById('fechaInicio').value);
