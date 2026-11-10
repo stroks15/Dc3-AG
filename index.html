@@ -140,6 +140,7 @@
         }
 
         .welcome-overlay{position:fixed;inset:0;background:rgba(15,23,42,.75);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}.welcome-card{width:min(620px,100%);background:#fff;border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(0,0,0,.3)}.welcome-card h2{margin:0 0 8px}.welcome-card p{color:#475569;line-height:1.5}.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.choice-card{border:1px solid #cbd5e1;background:#f8fafc;border-radius:12px;padding:16px;text-align:left;cursor:pointer}.choice-card strong{display:block;color:#172554;margin-bottom:6px}.choice-card span{font-size:13px;color:#475569}.choice-card:hover{border-color:#2563eb;background:#eff6ff}.mode-panel{border:1px solid #bfdbfe;background:#eff6ff;padding:14px;border-radius:12px;margin:14px 0}.hidden{display:none!important}.ine-preview{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}.ine-item{border:1px solid #cbd5e1;border-radius:9px;padding:8px;background:#fff;font-size:12px}.ine-item img{width:100%;height:90px;object-fit:contain;background:#f1f5f9}@media(max-width:650px){.choice-grid{grid-template-columns:1fr}.welcome-card{padding:20px}}
+        .choice-card.is-selected{border:2px solid #2563eb;background:#dbeafe;box-shadow:0 0 0 2px rgba(37,99,235,.12)}.choice-card:focus-visible,.btn:focus-visible{outline:3px solid #2563eb;outline-offset:3px}.step-actions .btn:disabled{opacity:.45;cursor:not-allowed}
         @media print {
             .panel { display: none; }
             body { background: white; padding: 0; }
@@ -149,7 +150,7 @@
 </head>
 <body>
 
-    <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true"><div class="welcome-card"><h2>Bienvenido al generador DC-3</h2><p>¿Cómo deseas registrar a los trabajadores?</p><div class="choice-grid"><button class="choice-card" type="button" onclick="elegirMetodo('ine')"><strong>📷 Usar fotografía de INE</strong><span>Una imagen por trabajador. El navegador intentará leer nombre y CURP.</span></button><button class="choice-card" type="button" onclick="elegirMetodo('manual')"><strong>⌨️ Captura manual</strong><span>Continuar con el formulario de captura existente.</span></button></div></div></div>
+    <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle"><div class="welcome-card"><h2 id="welcomeTitle">Bienvenido al generador DC-3</h2><p>¿Cómo deseas registrar a los trabajadores?</p><div class="choice-grid"><button id="methodIne" class="choice-card" type="button" aria-pressed="false" onclick="elegirMetodo('ine')"><strong>📷 Usar fotografía de INE</strong><span>Una imagen por trabajador. El navegador intentará leer nombre y CURP.</span></button><button id="methodManual" class="choice-card" type="button" aria-pressed="false" onclick="elegirMetodo('manual')"><strong>⌨️ Captura manual</strong><span>Continuar con el formulario de captura existente.</span></button></div><p id="methodHint" class="hint" aria-live="polite">Selecciona una opción para habilitar el botón Continuar.</p><div class="step-actions" style="justify-content:flex-end;margin-top:18px"><button id="continueMethod" class="btn" type="button" disabled onclick="continuarMetodo()">Continuar</button></div></div></div>
     <!-- Panel de captura guiada -->
     <div class="panel">
         <h2>Generador de Constancias DC-3</h2>
@@ -159,7 +160,7 @@
             <div><label>Seleccionar Curso DC-3:</label><select id="selectCurso"></select></div>
         </div>
 
-        <div id="modePanel" class="mode-panel hidden"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button class="choice-card" type="button" onclick="elegirAlcance('global')"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button class="choice-card" type="button" onclick="elegirAlcance('individual')"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><div id="globalRoleWrap" class="hidden" style="margin-top:12px"><label for="globalRole">Puesto común</label><select id="globalRole" class="step-input"></select></div></div>
+        <div id="modePanel" class="mode-panel hidden"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button id="scopeGlobal" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('global')"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button id="scopeIndividual" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('individual')"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><div id="globalRoleWrap" class="hidden" style="margin-top:12px"><label for="globalRole">Puesto común</label><select id="globalRole" class="step-input"></select></div><div class="step-actions" style="justify-content:flex-end;margin-top:14px"><button id="continueScope" class="btn" type="button" disabled onclick="continuarAlcance()">Continuar</button></div></div>
 <div id="ineUploadPanel" class="mode-panel hidden"><label for="ineFiles">Fotografías de INE (una imagen por trabajador)</label><input id="ineFiles" type="file" accept="image/*" multiple><p style="font-size:12px;color:#475569">El OCR se ejecuta en este navegador. Las imágenes no se envían a un servidor. Revisa los datos detectados.</p><button type="button" class="btn" onclick="procesarINEs()">Leer datos de las INE</button><span id="ocrStatus" aria-live="polite"></span><div id="inePreview" class="ine-preview"></div></div>
         <section id="workerEntry" class="worker-entry" aria-label="Captura de trabajadores">
             <h3>Datos de los trabajadores</h3>
@@ -290,21 +291,48 @@
         let datosGlobales = null;
         function elegirMetodo(metodo) {
             metodoCaptura = metodo;
+            const ine = document.getElementById('methodIne');
+            const manual = document.getElementById('methodManual');
+            ine.classList.toggle('is-selected', metodo === 'ine');
+            manual.classList.toggle('is-selected', metodo === 'manual');
+            ine.setAttribute('aria-pressed', String(metodo === 'ine'));
+            manual.setAttribute('aria-pressed', String(metodo === 'manual'));
+            document.getElementById('continueMethod').disabled = false;
+            document.getElementById('methodHint').textContent = metodo === 'ine' ? 'Elegiste fotografía de INE. Pulsa Continuar para configurar los datos.' : 'Elegiste captura manual. Pulsa Continuar para configurar los datos.';
+        }
+
+        function continuarMetodo() {
+            if (!metodoCaptura) { alert('Primero selecciona fotografía de INE o captura manual.'); return; }
             document.getElementById('welcomeOverlay').classList.add('hidden');
             document.getElementById('modePanel').classList.remove('hidden');
-            document.getElementById('ineUploadPanel').classList.toggle('hidden', metodo !== 'ine');
-            if (metodo === 'ine') document.getElementById('workerEntry').classList.add('hidden');
+            document.getElementById('modePanel').scrollIntoView({behavior:'smooth',block:'center'});
         }
+
         function elegirAlcance(alcance) {
             alcanceDatos = alcance;
+            const global = document.getElementById('scopeGlobal');
+            const individual = document.getElementById('scopeIndividual');
+            global.classList.toggle('is-selected', alcance === 'global');
+            individual.classList.toggle('is-selected', alcance === 'individual');
+            global.setAttribute('aria-pressed', String(alcance === 'global'));
+            individual.setAttribute('aria-pressed', String(alcance === 'individual'));
+            document.getElementById('continueScope').disabled = false;
             const role = document.getElementById('globalRole');
             document.getElementById('globalRoleWrap').classList.toggle('hidden', alcance !== 'global');
             if (!role.options.length) PUESTOS_COMUNES.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p; role.appendChild(o); });
+        }
+
+        function continuarAlcance() {
+            if (!alcanceDatos) { alert('Selecciona datos globales o por trabajador.'); return; }
+            document.getElementById('modePanel').classList.add('hidden');
+            document.getElementById('courseGlobalFields').classList.toggle('hidden', alcanceDatos !== 'global');
+            document.getElementById('ineUploadPanel').classList.toggle('hidden', metodoCaptura !== 'ine');
             document.getElementById('workerEntry').classList.toggle('hidden', metodoCaptura === 'ine');
-            document.getElementById('courseGlobalFields').classList.toggle('hidden', alcance !== 'global');
-            if (alcance === 'global') datosGlobales = { fechaInicio:document.getElementById('fechaInicio').value, fechaFin:document.getElementById('fechaFin').value, curso:document.getElementById('selectCurso').value };
+            if (alcanceDatos === 'global') datosGlobales = { fechaInicio:document.getElementById('fechaInicio').value, fechaFin:document.getElementById('fechaFin').value, curso:document.getElementById('selectCurso').value };
             renderizarTrabajadores();
             mostrarPaso(false);
+            const destino = metodoCaptura === 'ine' ? document.getElementById('ineUploadPanel') : document.getElementById('workerEntry');
+            destino.scrollIntoView({behavior:'smooth',block:'start'});
         }
 
         function renderizarTrabajadores() {
