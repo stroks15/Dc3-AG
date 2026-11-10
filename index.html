@@ -303,6 +303,7 @@
             document.getElementById('workerEntry').classList.toggle('hidden', metodoCaptura === 'ine');
             document.getElementById('courseGlobalFields').classList.toggle('hidden', alcance !== 'global');
             if (alcance === 'global') datosGlobales = { fechaInicio:document.getElementById('fechaInicio').value, fechaFin:document.getElementById('fechaFin').value, curso:document.getElementById('selectCurso').value };
+            renderizarTrabajadores();
             mostrarPaso(false);
         }
 
@@ -319,12 +320,16 @@
                     start.addEventListener('change',()=>{t.fechaInicio=start.value;});
                     const end=document.createElement('input'); end.type='date'; end.value=t.fechaFin||'';
                     end.addEventListener('change',()=>{t.fechaFin=end.value;});
+                    const role=document.createElement('select');
+                    PUESTOS_COMUNES.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;o.selected=t.puesto===p;role.appendChild(o);});
+                    role.addEventListener('change',()=>{t.puesto=role.value;});
                     const course=document.createElement('select');
                     CATALOGO_CURSOS.forEach((c,j)=>{const o=document.createElement('option');o.value=String(j);o.textContent=c.nombre;o.selected=String(t.curso||0)===String(j);course.appendChild(o);});
                     course.addEventListener('change',()=>{t.curso=course.value;});
-                    const wrap1=document.createElement('div'),wrap2=document.createElement('div'),wrap3=document.createElement('div');
-                    wrap1.append('Inicio del curso',start);wrap2.append('Término del curso',end);wrap3.append('Curso',course);
-                    controls.append(wrap1,wrap2,wrap3);chip.firstElementChild.appendChild(controls);
+                    const wrap1=document.createElement('div'),wrap2=document.createElement('div'),wrap3=document.createElement('div'),wrap4=document.createElement('div');
+                    wrap1.append('Inicio del curso',start);wrap2.append('Término del curso',end);wrap3.append('Curso',course);wrap4.append('Puesto',role);
+                    controls.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';
+                    controls.append(wrap1,wrap2,wrap3,wrap4);chip.firstElementChild.appendChild(controls);
                 });
             }
             document.getElementById('workerCount').textContent = trabajadores.length ? `${trabajadores.length} trabajador${trabajadores.length === 1 ? '' : 'es'} agregado${trabajadores.length === 1 ? '' : 's'}` : 'Aún no has agregado trabajadores.';
