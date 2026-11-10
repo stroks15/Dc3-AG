@@ -159,7 +159,9 @@
             <div><label>Seleccionar Curso DC-3:</label><select id="selectCurso"></select></div>
         </div>
 
-        <section class="worker-entry" aria-label="Captura de trabajadores">
+        <div id="modePanel" class="mode-panel hidden"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button class="choice-card" type="button" onclick="elegirAlcance('global')"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button class="choice-card" type="button" onclick="elegirAlcance('individual')"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><div id="globalRoleWrap" class="hidden" style="margin-top:12px"><label for="globalRole">Puesto común</label><select id="globalRole" class="step-input"></select></div></div>
+<div id="ineUploadPanel" class="mode-panel hidden"><label for="ineFiles">Fotografías de INE (una imagen por trabajador)</label><input id="ineFiles" type="file" accept="image/*" multiple><p style="font-size:12px;color:#475569">El OCR se ejecuta en este navegador. Las imágenes no se envían a un servidor. Revisa los datos detectados.</p><button type="button" class="btn" onclick="procesarINEs()">Leer datos de las INE</button><span id="ocrStatus" aria-live="polite"></span><div id="inePreview" class="ine-preview"></div></div>
+        <section id="workerEntry" class="worker-entry" aria-label="Captura de trabajadores">
             <h3>Datos de los trabajadores</h3>
             <p class="hint">Agrega a cada trabajador paso a paso. Los datos anteriores se guardan automáticamente al avanzar.</p>
             <div id="workerList" class="worker-list" aria-live="polite"></div>
@@ -185,6 +187,9 @@
     <!-- Área de Renderizado -->
     <div id="contenedorConstancias"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Catálogo oficial de cursos normativos para DC-3 en México con sus horas y áreas correspondientes
         const CATALOGO_CURSOS = [
@@ -278,6 +283,27 @@
         let trabajadores = [];
         let captura = { nombre: "", curp: "", puesto: "TÉCNICO EN MANTENIMIENTO" };
         let paso = 0;
+
+        let metodoCaptura = null;
+        let alcanceDatos = 'individual';
+        let ineFilesPorTrabajador = [];
+        let datosGlobales = null;
+        function elegirMetodo(metodo) {
+            metodoCaptura = metodo;
+            document.getElementById('welcomeOverlay').classList.add('hidden');
+            document.getElementById('modePanel').classList.remove('hidden');
+            document.getElementById('ineUploadPanel').classList.toggle('hidden', metodo !== 'ine');
+            if (metodo === 'ine') document.getElementById('workerEntry').classList.add('hidden');
+        }
+        function elegirAlcance(alcance) {
+            alcanceDatos = alcance;
+            const role = document.getElementById('globalRole');
+            document.getElementById('globalRoleWrap').classList.toggle('hidden', alcance !== 'global');
+            if (!role.options.length) PUESTOS_COMUNES.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p; role.appendChild(o); });
+            document.getElementById('workerEntry').classList.toggle('hidden', metodoCaptura === 'ine');
+            if (alcance === 'global') datosGlobales = { fechaInicio:document.getElementById('fechaInicio').value, fechaFin:document.getElementById('fechaFin').value, curso:document.getElementById('selectCurso').value };
+            mostrarPaso(false);
+        }
 
         function renderizarTrabajadores() {
             const lista = document.getElementById('workerList');
