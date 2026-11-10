@@ -1,96 +1,528 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#102a43">
-<meta name="description" content="Generador sencillo de constancias DC-3 para capacitación laboral.">
-<title>DC-3 | Generador de constancias</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
-<style>
-:root{--navy:#102a43;--blue:#1769aa;--blue2:#eaf3fb;--teal:#087e8b;--ink:#243b53;--muted:#627d98;--line:#d9e2ec;--bg:#f3f6fa;--white:#fff;--green:#16794b;--red:#b42318;--shadow:0 14px 38px rgba(16,42,67,.08)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select,textarea{font:inherit}.topbar{background:linear-gradient(115deg,#102a43,#174d70);color:#fff;padding:28px 22px 68px}.top-inner{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:48px;height:48px;border-radius:14px;background:#ffffff1c;display:grid;place-items:center;font-size:23px;border:1px solid #ffffff35}.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b9d7e8;font-weight:800}.topbar h1{font-size:clamp(23px,4vw,32px);margin:2px 0 0;letter-spacing:-.03em}.top-note{color:#d7e8f2;font-size:13px;text-align:right}.shell{max-width:1100px;margin:-44px auto 60px;padding:0 18px}.workspace{display:grid;grid-template-columns: minmax(0,1.15fr) minmax(280px,.85fr);gap:20px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:22px 24px 16px;border-bottom:1px solid #edf1f5}.panel-head h2{margin:0;font-size:19px;color:var(--navy);letter-spacing:-.02em}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:13px}.panel-body{padding:22px 24px}.steps{display:flex;gap:8px;margin-bottom:22px}.step{flex:1;display:flex;align-items:center;gap:8px;color:#8295a7;font-size:12px;font-weight:700}.step-num{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#edf2f7;color:#627d98}.step.active{color:var(--blue)}.step.active .step-num{background:var(--blue);color:#fff}.step.done{color:var(--green)}.step.done .step-num{background:#e4f4eb;color:var(--green)}.section-label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--muted);margin:0 0 13px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{min-width:0}.field.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:700;color:#334e68;margin-bottom:6px}input[type=date],select,textarea,input[type=text]{width:100%;border:1px solid #cbd6e2;border-radius:10px;background:#fff;color:var(--ink);padding:11px 12px;outline:none;transition:border .15s,box-shadow .15s}input:focus,select:focus,textarea:focus{border-color:#3986c6;box-shadow:0 0 0 3px #1769aa18}textarea{min-height:150px;resize:vertical;line-height:1.55;font-size:13px}.hint{font-size:12px;color:var(--muted);margin:6px 0 0}.format-hint{background:#f5f9fc;border:1px solid #e2ebf3;border-radius:10px;padding:11px 12px;color:#486581;font-size:12px;margin-top:10px}.format-hint code{font-family:ui-monospace,monospace;color:#1769aa}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:750;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,background .15s}.btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}.primary{background:var(--blue);color:#fff}.primary:hover{background:#12588f}.secondary{background:#eaf1f7;color:#244b6b}.success{background:var(--green);color:#fff}.outline{background:#fff;color:#486581;border:1px solid var(--line)}.side-card{padding:20px 21px}.side-card h3{margin:0 0 14px;color:var(--navy);font-size:16px}.summary-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #edf1f5;font-size:13px}.summary-row:last-child{border:0}.summary-row span{color:var(--muted)}.summary-row strong{color:var(--navy);text-align:right}.tip{background:#eff7fb;border:1px solid #d7eaf4;border-radius:12px;padding:14px;margin-top:16px;font-size:12px;color:#35566e}.tip strong{display:block;margin-bottom:4px;color:#174d70}.status{display:none;margin-top:14px;border-radius:10px;padding:11px 13px;font-size:13px}.status.show{display:block}.status.error{background:#fff1f0;color:var(--red);border:1px solid #ffd1cc}.status.ok{background:#eaf7ef;color:#17633c;border:1px solid #c9ebd5}.status.warn{background:#fff8e7;color:#8a5b00;border:1px solid #f5dfaa}.preview-wrap{margin-top:24px;overflow-x:auto}.preview-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px 14px}.preview-head h2{margin:0;color:var(--navy);font-size:20px}.preview-head p{margin:3px 0 0;color:var(--muted);font-size:13px}.preview-actions{display:flex;gap:8px;flex-wrap:wrap}.empty{background:#fff;border:1px dashed #c7d4e0;border-radius:16px;padding:32px;text-align:center;color:var(--muted)}.empty-icon{font-size:28px;margin-bottom:8px}.employee-preview{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}.employee-preview strong{display:block;color:var(--navy);font-size:14px}.employee-preview small{color:var(--muted)}.employee-preview .tag{font-size:11px;background:#eaf7ef;color:#17633c;border-radius:20px;padding:4px 8px;font-weight:800;white-space:nowrap}
-.dc3-container{width:794px;min-height:1060px;background:#fff;margin:20px auto 30px;padding:34px 40px;border:1px solid #d7dce2;box-shadow:0 8px 26px #102a4310;color:#111;display:flex;flex-direction:column;justify-content:space-between;page-break-after:always;font-family:Arial,Helvetica,sans-serif}.dc3-container *{box-sizing:border-box}.dc3-top{font-size:15px;font-weight:bold;text-align:center}.dc3-subtitle{font-size:16px;font-weight:bold;text-align:center;margin:3px 0 16px}.dc3-section{background:#142f46;color:#fff;text-align:center;font-size:11px;font-weight:bold;padding:6px;margin-top:9px;letter-spacing:.04em}.dc3-box{border:1px solid #222;border-top:0;padding:6px 8px;font-size:10px}.dc3-worker{background:#edf7f0}.dc3-company{background:#fff8e9}.dc3-field-title{font-size:9px;margin-bottom:4px}.dc3-value{font-size:11px;font-weight:bold;min-height:16px;text-transform:uppercase;overflow-wrap:anywhere}.dc3-row{display:flex}.dc3-col{padding:6px;border:1px solid #222;border-top:0;min-width:0}.dc3-cells{display:flex}.dc3-cell{width:19px;height:23px;border:1px solid #222;border-right:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;background:inherit}.dc3-cell:last-child{border-right:1px solid #222}.dc3-signatures{width:100%;border-collapse:collapse;margin-top:12px}.dc3-signatures td{width:33.33%;text-align:center;vertical-align:bottom;font-size:9px;padding:4px 8px}.dc3-sign-space{height:65px}.dc3-sign-line{border-top:1px solid #222;padding-top:4px}.dc3-instructions{font-size:8px;line-height:1.35;margin-top:12px}.dc3-legal{border:1px solid #222;padding:8px;font-size:8px;text-align:center;margin-top:12px}
-@media(max-width:820px){.workspace{grid-template-columns:1fr}.top-note{display:none}.side-card{order:2}.dc3-container{transform-origin:top left}}
-@media(max-width:560px){.topbar{padding:22px 18px 60px}.shell{padding:0 12px}.panel-head,.panel-body{padding:18px}.field-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.steps{gap:5px}.step{font-size:10px;gap:5px}.step-num{width:24px;height:24px}.actions .btn{flex:1}.preview-head{align-items:start;flex-direction:column}}
-@media print{body{background:#fff}.topbar,.shell>.workspace,.preview-head,.employee-preview,.empty{display:none!important}.shell{margin:0;padding:0;max-width:none}.preview-wrap{margin:0}.dc3-container{margin:0;border:0;box-shadow:none;width:8.5in;min-height:10.8in;height:10.8in;padding:.35in .42in;page-break-after:always;break-after:page}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador Masivo de Formato DC-3</title>
+    <!-- Librería para conversión a PDF de alta resolución -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+        body { background-color: #f4f6f9; margin: 0; padding: 20px; color: #000; }
+        
+        /* Panel de Control Interactivo */
+        .panel {
+            max-width: 850px;
+            margin: 0 auto 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        h2 { margin-top: 0; color: #1a237e; border-bottom: 2px solid #1a237e; padding-bottom: 8px; }
+        .grid-3col { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 15px; margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; }
+        input[type="date"], select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        .btn { background: #1a237e; color: white; border: none; padding: 12px 20px; border-radius: 9px; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 10px; transition: .2s; }
+        .btn:hover { background: #0d47a1; transform: translateY(-1px); }
+        .panel { border: 1px solid #e4e8f0; border-radius: 16px; padding: 26px; }
+        .panel h2 { font-size: 23px; letter-spacing: -.4px; }
+        .grid-3col { align-items: end; }
+        .grid-3col input, .grid-3col select { min-height: 43px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #fff; }
+        .worker-entry { margin-top: 24px; padding: 20px; border: 1px solid #dce4ef; border-radius: 14px; background: #f8fafc; }
+        .worker-entry h3 { margin: 0 0 5px; color: #172554; font-size: 17px; }
+        .worker-entry .hint { margin: 0 0 18px; color: #64748b; font-size: 13px; }
+        .step-progress { display:flex; gap:7px; margin: 14px 0 20px; }
+        .step-progress span { height:5px; flex:1; border-radius:9px; background:#dbe3ef; }
+        .step-progress span.active, .step-progress span.done { background:#2563eb; }
+        .step-label { color:#475569; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; margin-bottom:8px; }
+        .step-input { width:100%; min-height:54px; padding:14px 16px; border:1.5px solid #cbd5e1; border-radius:10px; font-size:17px; outline:none; background:white; }
+        .step-input:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+        .step-actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
+        .step-actions .btn { margin:0; }
+        .btn-secondary { background:#e2e8f0; color:#1e293b; }
+        .btn-secondary:hover { background:#cbd5e1; }
+        .worker-list { display:grid; gap:8px; margin:14px 0 0; }
+        .worker-chip { display:flex; justify-content:space-between; align-items:center; gap:12px; background:white; border:1px solid #dbe3ef; border-radius:10px; padding:10px 12px; font-size:13px; }
+        .worker-chip strong { color:#0f172a; }
+        .worker-chip small { display:block; color:#64748b; margin-top:3px; }
+        .worker-chip button { border:0; background:#fee2e2; color:#991b1b; border-radius:7px; padding:6px 9px; cursor:pointer; }
+        .worker-count { font-size:12px; color:#64748b; margin-top:12px; }
+        .form-footer { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+        .form-footer .btn { margin:0; }
+        @media(max-width:650px) { body{padding:10px} .panel{padding:16px} .grid-3col{grid-template-columns:1fr;gap:10px} .step-actions{align-items:stretch} .step-actions .btn{flex:1} }
+
+        /* Formato Hoja Carta Exacta (Letter dimensions: 8.5 x 11 inches) */
+        .dc3-container {
+            width: 794px;
+            height: 960px;
+            background: white;
+            margin: 0 auto 40px auto;
+            padding: 35px 40px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: always;
+        }
+
+        .title-header { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 2px; }
+        .subtitle-header { font-size: 17px; font-weight: bold; text-align: center; margin-bottom: 20px; }
+        
+        .section-header {
+            background-color: #000;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Estilos de Cajas con Color de Fondo Uniforme */
+        .box {
+            border: 1px solid #000;
+            border-top: none;
+            padding: 6px 8px;
+            font-size: 11px;
+        }
+
+        .bg-trabajador { background-color: #e8f5e9 !important; } /* Verde Pastel Formal */
+        .bg-empresa { background-color: #fff8e1 !important; }    /* Beige / Crema Formal */
+        
+        .box-title { font-size: 10px; margin-bottom: 4px; font-weight: normal; }
+        .box-value { font-size: 12px; font-weight: bold; min-height: 18px; text-transform: uppercase; }
+
+        /* Rejilla de caracteres con color transparente para heredar el fondo verde/beige */
+        .char-cells { display: flex; flex-direction: row; }
+        .char-cell {
+            width: 20px;
+            height: 24px;
+            border-right: 1px solid #000;
+            border-top: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            background-color: inherit; /* Hereda el color de fondo de la sección */
+        }
+        .char-cell:last-child { border-right: none; }
+
+        /* Sección de Firmas Sin Fondo Amarillo (Completamente Limpias/Blancas) */
+        .signatures-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .signatures-table td {
+            width: 33.33%;
+            text-align: center;
+            vertical-align: bottom;
+            font-size: 10px;
+            padding: 5px 10px;
+            background-color: #ffffff !important; /* Totalmente blanco sin amarillo */
+        }
+        .signature-container {
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .signature-line { border-top: 1px solid #000; margin-top: 4px; padding-top: 4px; }
+
+        .instructions {
+            font-size: 9.5px;
+            margin-top: 15px;
+            line-height: 1.35;
+        }
+
+        @media print {
+            .panel { display: none; }
+            body { background: white; padding: 0; }
+            .dc3-container { border: none; padding: 20px; width: 100%; height: 100vh; }
+        }
+    </style>
 </head>
 <body>
-<header class="topbar"><div class="top-inner"><div class="brand"><div class="brand-mark">DC3</div><div><div class="eyebrow">Herramienta de capacitación laboral</div><h1>Generador de constancias</h1></div></div><div class="top-note">Formato DC-3<br>Generación por trabajador · PDF</div></div></header>
-<main class="shell">
-<section class="workspace">
-<div class="panel">
-<div class="panel-head"><h2>Crear constancias DC-3</h2><p>Completa los datos, agrega a tus trabajadores y revisa antes de descargar.</p></div>
-<div class="panel-body">
-<div class="steps"><div class="step active" id="step1"><span class="step-num">1</span> Datos del curso</div><div class="step" id="step2"><span class="step-num">2</span> Trabajadores</div><div class="step" id="step3"><span class="step-num">3</span> Descargar</div></div>
-<p class="section-label">1 · Periodo y capacitación</p>
-<div class="field-grid">
-<div class="field"><label for="fechaInicio">Fecha de inicio</label><input type="date" id="fechaInicio"></div>
-<div class="field"><label for="fechaFin">Fecha de término</label><input type="date" id="fechaFin"></div>
-<div class="field full"><label for="selectCurso">Curso de capacitación</label><select id="selectCurso"></select><p class="hint" id="courseMeta">Selecciona un curso para ver sus horas y área temática.</p></div>
-</div>
-<div style="height:1px;background:#edf1f5;margin:22px 0"></div>
-<p class="section-label">2 · Lista de trabajadores</p>
-<div class="field"><label for="listaTrabajadores">Un trabajador por renglón</label><textarea id="listaTrabajadores" placeholder="NOMBRE COMPLETO, CURP, PUESTO&#10;GALVAN MARTINEZ EDGAR, GAME960112HDFLRD04, TÉCNICO&#10;RODRIGUEZ AMADOR JOSE ANGEL, ROAA030507HVZDMN06, OPERADOR"></textarea><p class="hint">Separa los datos con comas. El puesto es opcional; si lo omites se asignará “TÉCNICO”.</p></div>
-<div class="format-hint"><strong>Formato de captura</strong><br><code>NOMBRE COMPLETO, CURP, PUESTO</code><br>Ejemplo: <code>ANA PEREZ LOPEZ, PELA900101MDFRRN01, OPERADORA</code></div>
-<div class="actions"><button class="btn primary" id="generateBtn" type="button">✦ Generar vista previa</button><button class="btn outline" id="sampleBtn" type="button">Cargar ejemplo</button></div>
-<div id="status" class="status" role="status" aria-live="polite"></div>
-</div></div>
-<aside class="panel side-card"><h3>Resumen de generación</h3>
-<div class="summary-row"><span>Curso</span><strong id="summaryCourse">Sin seleccionar</strong></div>
-<div class="summary-row"><span>Duración</span><strong id="summaryHours">—</strong></div>
-<div class="summary-row"><span>Área temática</span><strong id="summaryArea">—</strong></div>
-<div class="summary-row"><span>Trabajadores válidos</span><strong id="summaryWorkers">0</strong></div>
-<div class="summary-row"><span>Constancias listas</span><strong id="summaryDocs">0</strong></div>
-<div class="tip"><strong>Antes de descargar</strong>Verifica nombres, CURP, fechas y datos de la empresa. Cada trabajador generará un archivo PDF individual.</div>
-<div class="actions"><button class="btn success" id="downloadBtn" type="button" disabled>↓ Descargar todos los PDF</button></div>
-<p class="hint">La descarga se realiza desde tu navegador. No se envían los datos a un servidor.</p>
-</aside>
-</section>
-<section class="preview-wrap"><div class="preview-head"><div><h2>Vista previa</h2><p id="previewCount">Todavía no has generado constancias.</p></div><div class="preview-actions"><button class="btn secondary" id="printBtn" type="button" disabled>Imprimir constancias</button></div></div><div id="employeeList"><div class="empty"><div class="empty-icon">▤</div><strong>Tu vista previa aparecerá aquí</strong><br><span>Completa los datos y selecciona “Generar vista previa”.</span></div></div><div id="documents"></div></section>
-</main>
-<script>
-const CATALOGO_CURSOS=[
-{nombre:"TRABAJOS EN ALTURA, SEGURIDAD ELECTRICA Y MATERIALES QUIMICOS",horas:"48 HRS",area:"6000 SEGURIDAD"},
-{nombre:"PLATAFORMAS DE ELEVACION",horas:"8 HRS",area:"5000 MANTENIMIENTO Y REPARACION"},
-{nombre:"SEGURIDAD EN TRABAJOS EN ALTURAS (NOM-009-STPS-2011)",horas:"16 HRS",area:"6000 SEGURIDAD"},
-{nombre:"PRIMEROS AUXILIOS Y BRIGADAS DE EMERGENCIA",horas:"12 HRS",area:"6000 SEGURIDAD"},
-{nombre:"PREVENCIÓN Y COMBATE DE INCENDIOS (NOM-002-STPS-2010)",horas:"10 HRS",area:"6000 SEGURIDAD"},
-{nombre:"SEGURIDAD ELECTRICA Y BLOQUEO LOTO (NOM-029-STPS-2011)",horas:"16 HRS",area:"6000 SEGURIDAD"},
-{nombre:"OPERACIÓN SEGURA DE MONTACARGAS (NOM-006-STPS-2014)",horas:"20 HRS",area:"5000 MANTENIMIENTO Y REPARACION"},
-{nombre:"TRABAJOS EN ESPACIOS CONFINADOS (NOM-033-STPS-2015)",horas:"16 HRS",area:"6000 SEGURIDAD"}];
-const EMPRESA={empresa:"EDGARDO FLORENTINO GALVAN RUIZ",registroPatronal:"Y6669384106",rfc:"GARE721207M51",ocupacion:"03.4 – INSTALACIÓN Y MANTENIMIENTO",capacitador:"RIVERO RAMOS CARLOS ESTEBAN"};
-const $=id=>document.getElementById(id);let trabajadoresActuales=[];
-function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function cargarCatalogo(){const select=$("selectCurso");select.innerHTML=CATALOGO_CURSOS.map((c,i)=>'<option value="'+i+'">'+escapeHTML(c.nombre)+' ('+escapeHTML(c.horas)+')</option>').join("");actualizarResumen();}
-function curso(){return CATALOGO_CURSOS[Number($("selectCurso").value)]||CATALOGO_CURSOS[0];}
-function actualizarResumen(){const c=curso();$("summaryCourse").textContent=c.nombre;$("summaryHours").textContent=c.horas;$("summaryArea").textContent=c.area;$("courseMeta").textContent=c.horas+" · "+c.area;}
-function mostrarEstado(msg,type="ok"){$("status").textContent=msg;$("status").className="status show "+type;}
-function fechaPartes(value){if(!value)return {y:"    ",m:"  ",d:"  "};const [y,m,d]=value.split("-");return {y,m,d};}
-function celdas(value,n){const chars=String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,n).padEnd(n," ");return '<div class="dc3-cells">'+Array.from(chars).map(ch=>'<span class="dc3-cell">'+(ch===" "?"":escapeHTML(ch))+'</span>').join("")+'</div>';}
-function parseTrabajadores(raw){const valid=[],errors=[];raw.split(/\r?\n/).forEach((line,i)=>{if(!line.trim())return;const parts=line.split(",");const nombre=(parts[0]||"").trim().toUpperCase();const curp=(parts[1]||"").trim().toUpperCase();const puesto=(parts.slice(2).join(",")||"TÉCNICO").trim().toUpperCase();if(!nombre){errors.push("Línea "+(i+1)+": falta el nombre.");return;}if(!/^[A-Z0-9]{18}$/.test(curp)){errors.push("Línea "+(i+1)+" ("+nombre+"): la CURP debe tener exactamente 18 letras o números.");return;}valid.push({nombre,curp,puesto:puesto||"TÉCNICO"});});return {valid,errors};}
-function generarDocumento(t,idx){const c=curso(),ini=fechaPartes($("fechaInicio").value),fin=fechaPartes($("fechaFin").value);return `
-<article class="dc3-container" id="dc3-${idx}">
-<div><div class="dc3-top">FORMATO DC-3</div><div class="dc3-subtitle">CONSTANCIA DE COMPETENCIAS O DE HABILIDADES LABORALES</div>
-<div class="dc3-section">DATOS DEL TRABAJADOR</div>
-<div class="dc3-box dc3-worker"><div class="dc3-field-title">Nombre (Anotar apellido paterno, apellido materno y nombre(s))</div><div class="dc3-value">${escapeHTML(t.nombre)}</div></div>
-<div class="dc3-row"><div class="dc3-col dc3-worker" style="flex:1.2"><div class="dc3-field-title">Clave Única de Registro de Población</div>${celdas(t.curp,18)}</div><div class="dc3-col dc3-worker" style="flex:1"><div class="dc3-field-title">Ocupación específica (Catálogo Nacional de Ocupaciones) 1/</div><div class="dc3-value" style="font-size:10px">${escapeHTML(EMPRESA.ocupacion)}</div></div></div>
-<div class="dc3-box dc3-worker"><div class="dc3-field-title">Puesto*</div><div class="dc3-value">${escapeHTML(t.puesto)}</div></div>
-<div class="dc3-section">DATOS DE LA EMPRESA</div>
-<div class="dc3-box dc3-company"><div class="dc3-field-title">Nombre o razón social</div><div class="dc3-value">${escapeHTML(EMPRESA.empresa)}</div></div>
-<div class="dc3-row"><div class="dc3-col dc3-company" style="flex:1"><div class="dc3-field-title">Registro Federal de Contribuyentes con homoclave (SHCP)</div>${celdas(EMPRESA.rfc,13)}</div><div class="dc3-col dc3-company" style="flex:1"><div class="dc3-field-title">Registro Patronal</div><div class="dc3-value" style="margin-top:5px;letter-spacing:1px">${escapeHTML(EMPRESA.registroPatronal)}</div></div></div>
-<div class="dc3-section">DATOS DEL PROGRAMA DE CAPACITACIÓN, ADIESTRAMIENTO Y PRODUCTIVIDAD</div>
-<div class="dc3-box"><div class="dc3-field-title">Nombre del curso</div><div class="dc3-value">${escapeHTML(c.nombre)}</div></div>
-<div class="dc3-row" style="border:1px solid #222;border-top:0"><div style="width:25%;padding:6px;border-right:1px solid #222"><div class="dc3-field-title">Duración en horas</div><div class="dc3-value">${escapeHTML(c.horas)}</div></div><div style="width:75%;padding:6px"><div style="font-size:9px;font-weight:bold;margin-bottom:5px">Periodo de ejecución:</div><div style="display:flex;justify-content:space-between;gap:10px;font-size:9px"><div>De ${celdas(ini.y,4)} ${celdas(ini.m,2)} ${celdas(ini.d,2)}</div><div>A ${celdas(fin.y,4)} ${celdas(fin.m,2)} ${celdas(fin.d,2)}</div></div></div></div>
-<div class="dc3-box"><div class="dc3-field-title">Área temática del curso 2/</div><div class="dc3-value">${escapeHTML(c.area)}</div></div>
-<div class="dc3-box"><div class="dc3-field-title">Nombre del agente capacitador o STPS 3/</div><div class="dc3-value">${escapeHTML(EMPRESA.capacitador)}</div></div>
-<div class="dc3-legal">Los datos se asientan en esta constancia bajo protesta de decir verdad, apercibidos de la responsabilidad en que incurre todo aquel que no se conduce con verdad.
-<table class="dc3-signatures"><tr><td><div class="dc3-sign-space"></div><div class="dc3-sign-line">Instructor o tutor<br><b>${escapeHTML(EMPRESA.capacitador)}</b><br>Nombre y firma</div></td><td><div class="dc3-sign-space"></div><div class="dc3-sign-line">Patrón o representante legal 4/<br><b>${escapeHTML(EMPRESA.empresa)}</b><br>Nombre y firma</div></td><td><div class="dc3-sign-space"></div><div class="dc3-sign-line">Representante de los trabajadores 5/<br><b>Nombre y firma</b></div></td></tr></table></div></div>
-<div class="dc3-instructions"><b>INSTRUCCIONES</b><br>- Llenar a máquina o con letra de molde.<br>- Deberá entregarse al trabajador dentro de los veinte días hábiles siguientes al término del curso de capacitación aprobado.<br>1/ Las áreas y subáreas ocupacionales del Catálogo Nacional de Ocupaciones se encuentran disponibles en el reverso de este formato y en la página www.stps.gob.mx<br>2/ Las áreas temáticas de los cursos se encuentran disponibles en el reverso de este formato y en la página www.stps.gob.mx<br>3/ Cursos impartidos por el área competente de la Secretaría del Trabajo y Previsión Social.<br>4/ Para empresas con menos de 51 trabajadores. Para empresas con más de 50 trabajadores firmaría el representante del patrón ante la Comisión mixta de capacitación, adiestramiento y productividad.<br>5/ Solo para empresas con más de 50 trabajadores.</div></article>`;}
-function generar(){const raw=$("listaTrabajadores").value.trim();if(!raw){mostrarEstado("Agrega al menos un trabajador para continuar.","error");return;}if(!$("fechaInicio").value||!$("fechaFin").value){mostrarEstado("Selecciona las dos fechas del curso.","error");return;}if($("fechaFin").value<$("fechaInicio").value){mostrarEstado("La fecha de término no puede ser anterior a la fecha de inicio.","error");return;}const parsed=parseTrabajadores(raw);if(!parsed.valid.length){mostrarEstado(parsed.errors.join(" "), "error");return;}trabajadoresActuales=parsed.valid;$("documents").innerHTML=trabajadoresActuales.map(generarDocumento).join("");$("employeeList").innerHTML=trabajadoresActuales.map((t,i)=>'<div class="employee-preview"><div><strong>'+escapeHTML(t.nombre)+'</strong><small>CURP: '+escapeHTML(t.curp)+' · '+escapeHTML(t.puesto)+'</small></div><span class="tag">Lista '+(i+1)+'</span></div>').join("");$("summaryWorkers").textContent=trabajadoresActuales.length;$("summaryDocs").textContent=trabajadoresActuales.length;$("previewCount").textContent=trabajadoresActuales.length+" constancia(s) listas para revisar."; $("downloadBtn").disabled=false;$("printBtn").disabled=false;$("step1").className="step done";$("step2").className="step done";$("step3").className="step active";if(parsed.errors.length)mostrarEstado("Se generaron "+parsed.valid.length+" constancias. Se omitieron "+parsed.errors.length+" línea(s): "+parsed.errors.join(" "), "warn");else mostrarEstado("¡Listo! Se generaron "+parsed.valid.length+" constancia(s). Revisa los datos antes de descargar.","ok");}
-async function descargar(){const docs=[...document.querySelectorAll(".dc3-container")];if(!docs.length)return;const btn=$("downloadBtn");btn.disabled=true;try{if(!window.html2pdf)throw new Error("No se pudo cargar el generador PDF. Comprueba tu conexión e inténtalo de nuevo.");for(let i=0;i<docs.length;i++){const node=docs[i],nombre=trabajadoresActuales[i]?.nombre||"Trabajador";btn.textContent="Generando "+(i+1)+" de "+docs.length+"…";await html2pdf().set({margin:0,filename:"DC3_"+nombre.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"_")+".pdf",image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},jsPDF:{unit:"in",format:"letter",orientation:"portrait"}}).from(node).save();}mostrarEstado("Descarga finalizada: "+docs.length+" PDF(s).","ok");}catch(e){mostrarEstado(e.message||"Ocurrió un error al generar los PDF.","error");}finally{btn.disabled=false;btn.textContent="↓ Descargar todos los PDF";}}
-$("selectCurso").addEventListener("change",actualizarResumen);$("generateBtn").addEventListener("click",generar);$("downloadBtn").addEventListener("click",descargar);$("printBtn").addEventListener("click",()=>window.print());$("sampleBtn").addEventListener("click",()=>{$("listaTrabajadores").value="GALVAN MARTINEZ EDGAR, GAME960112HDFLRD04, TÉCNICO\nRODRIGUEZ AMADOR JOSE ANGEL, ROAA030507HVZDMN06, OPERADOR";mostrarEstado("Ejemplo cargado. Sustituye los datos de muestra antes de emitir constancias.","warn");});["fechaInicio","fechaFin"].forEach(id=>$(id).addEventListener("change",()=>{if(trabajadoresActuales.length)mostrarEstado("Cambiaste las fechas. Vuelve a generar la vista previa para actualizar las constancias.","warn");}));cargarCatalogo();
-</script>
-</body></html>
+
+    <!-- Panel de captura guiada -->
+    <div class="panel">
+        <h2>Generador de Constancias DC-3</h2>
+        <div class="grid-3col">
+            <div><label>Fecha de Inicio del Curso:</label><input type="date" id="fechaInicio" value="2026-01-10"></div>
+            <div><label>Fecha de Término del Curso:</label><input type="date" id="fechaFin" value="2026-01-25"></div>
+            <div><label>Seleccionar Curso DC-3:</label><select id="selectCurso"></select></div>
+        </div>
+
+        <section class="worker-entry" aria-label="Captura de trabajadores">
+            <h3>Datos de los trabajadores</h3>
+            <p class="hint">Agrega a cada trabajador paso a paso. Los datos anteriores se guardan automáticamente al avanzar.</p>
+            <div id="workerList" class="worker-list" aria-live="polite"></div>
+            <div id="workerCount" class="worker-count">Aún no has agregado trabajadores.</div>
+            <div id="draftSummary" class="worker-chip" style="display:none;margin-top:10px"></div>
+            <div class="step-progress" aria-hidden="true"><span id="progress1" class="active"></span><span id="progress2"></span><span id="progress3"></span></div>
+            <div id="stepLabel" class="step-label">Paso 1 de 3 · Nombre completo</div>
+            <div id="stepContent">
+                <label for="workerName">Nombre completo</label>
+                <input id="workerName" class="step-input" type="text" autocomplete="name" placeholder="Escribe nombre y apellidos">
+            </div>
+            <div class="step-actions">
+                <button type="button" class="btn btn-secondary" id="backStep" onclick="pasoAnterior()" disabled>Anterior</button>
+                <button type="button" class="btn" id="nextStep" onclick="siguientePaso()">Siguiente</button>
+            </div>
+        </section>
+        <div class="form-footer">
+            <button class="btn" onclick="generarDocumentos()">1. Generar Vista Previa</button>
+            <button class="btn" style="background:#2e7d32;" onclick="descargarPDFs()">2. Descargar PDFs Automáticamente</button>
+        </div>
+    </div>
+
+    <!-- Área de Renderizado -->
+    <div id="contenedorConstancias"></div>
+
+    <script>
+        // Catálogo oficial de cursos normativos para DC-3 en México con sus horas y áreas correspondientes
+        const CATALOGO_CURSOS = [
+            {
+                nombre: "TRABAJOS EN ALTURA, SEGURIDAD ELECTRICA Y MATERIALES QUIMICOS",
+                horas: "48 HRS",
+                area: "6000 SEGURIDAD"
+            },
+            {
+                nombre: "PLATAFORMAS DE ELEVACION",
+                horas: "8 HRS",
+                area: "5000 MANTENIMIENTO Y REPARACION"
+            },
+            {
+                nombre: "SEGURIDAD EN TRABAJOS EN ALTURAS (NOM-009-STPS-2011)",
+                horas: "16 HRS",
+                area: "6000 SEGURIDAD"
+            },
+            {
+                nombre: "PRIMEROS AUXILIOS Y BRIGADAS DE EMERGENCIA",
+                horas: "12 HRS",
+                area: "6000 SEGURIDAD"
+            },
+            {
+                nombre: "PREVENCIÓN Y COMBATE DE INCENDIOS (NOM-002-STPS-2010)",
+                horas: "10 HRS",
+                area: "6000 SEGURIDAD"
+            },
+            {
+                nombre: "SEGURIDAD ELECTRICA Y BLOQUEO LOTO (NOM-029-STPS-2011)",
+                horas: "16 HRS",
+                area: "6000 SEGURIDAD"
+            },
+            {
+                nombre: "OPERACIÓN SEGURA DE MONTACARGAS (NOM-006-STPS-2014)",
+                horas: "20 HRS",
+                area: "5000 MANTENIMIENTO Y REPARACION"
+            },
+            {
+                nombre: "TRABAJOS EN ESPACIOS CONFINADOS (NOM-033-STPS-2015)",
+                horas: "16 HRS",
+                area: "6000 SEGURIDAD"
+            }
+        ];
+
+        // Datos Fijos de la Empresa
+        const DATOS_EMPRESA = {
+            empresa: "EDGARDO FLORENTINO GALVAN RUIZ",
+            registroPatronal: "Y6669384106",
+            rfc: "GARE721207M51",
+            ocupacion: "03.4 – INSTALACIÓN Y MANTENIMIENTO",
+            capacitador: "RIVERO RAMOS CARLOS ESTEBAN"
+        };
+
+        // Inicializar catálogo en el Selector
+        function cargarCatalogoCursos() {
+            const select = document.getElementById('selectCurso');
+            select.innerHTML = '';
+            CATALOGO_CURSOS.forEach((cursoObj, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `${cursoObj.nombre} (${cursoObj.horas})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function formatearCeldas(texto, maxCeldas) {
+            let html = '<div class="char-cells">';
+            const chars = texto.replace(/[^a-zA-Z0-9]/g, '').padEnd(maxCeldas, ' ').split('');
+            for (let i = 0; i < maxCeldas; i++) {
+                html += `<div class="char-cell">${chars[i] || ''}</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function obtenerDesgloseFecha(fechaStr) {
+            if (!fechaStr) return { a: '    ', m: '  ', d: '  ' };
+            const f = new Date(fechaStr + 'T00:00:00');
+            return {
+                a: f.getFullYear().toString(),
+                m: (f.getMonth() + 1).toString().padStart(2, '0'),
+                d: f.getDate().toString().padStart(2, '0')
+            };
+        }
+
+        const PUESTOS_COMUNES = [
+            "TÉCNICO EN MANTENIMIENTO", "OPERADOR", "AUXILIAR GENERAL",
+            "SUPERVISOR", "ELECTRICISTA", "SOLDADOR"
+        ];
+        let trabajadores = [];
+        let captura = { nombre: "", curp: "", puesto: "TÉCNICO EN MANTENIMIENTO" };
+        let paso = 0;
+
+        function renderizarTrabajadores() {
+            const lista = document.getElementById('workerList');
+            lista.innerHTML = trabajadores.map((t, i) => `
+                <div class="worker-chip"><div><strong>${i + 1}. ${escaparHTML(t.nombre)}</strong><small>CURP: ${escaparHTML(t.curp)} · ${escaparHTML(t.puesto)}</small></div><button type="button" onclick="eliminarTrabajador(${i})" aria-label="Eliminar trabajador ${i + 1}">Quitar</button></div>
+            `).join('');
+            document.getElementById('workerCount').textContent = trabajadores.length ? `${trabajadores.length} trabajador${trabajadores.length === 1 ? '' : 'es'} agregado${trabajadores.length === 1 ? '' : 's'}` : 'Aún no has agregado trabajadores.';
+        }
+
+        function escaparHTML(valor) {
+            return String(valor).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function mostrarPaso(enfocar = false) {
+            const contenido = document.getElementById('stepContent');
+            const titulos = ['Nombre completo', 'CURP', 'Puesto'];
+            document.getElementById('stepLabel').textContent = `Paso ${paso + 1} de 3 · ${titulos[paso]}`;
+            [1,2,3].forEach((n, i) => document.getElementById(`progress${n}`).className = i <= paso ? (i < paso ? 'done' : 'active') : '');
+            document.getElementById('backStep').disabled = paso === 0;
+            document.getElementById('nextStep').textContent = paso === 2 ? 'Agregar trabajador' : 'Siguiente';
+            const borrador = document.getElementById('draftSummary');
+            if (paso > 0) {
+                borrador.style.display = 'flex';
+                borrador.innerHTML = `<div><strong>${escaparHTML(captura.nombre)}</strong><small>${paso === 2 ? `CURP: ${escaparHTML(captura.curp)}` : 'Nombre completo guardado'}</small></div><span style="color:#2563eb;font-size:12px;font-weight:700">EN CAPTURA</span>`;
+            } else { borrador.style.display = 'none'; borrador.innerHTML = ''; }
+            if (paso === 0) {
+                contenido.innerHTML = '<label for="workerName">Nombre completo</label><input id="workerName" class="step-input" type="text" autocomplete="name" placeholder="Escribe nombre y apellidos" maxlength="120">';
+                document.getElementById('workerName').value = captura.nombre;
+            } else if (paso === 1) {
+                contenido.innerHTML = '<label for="workerCurp">CURP</label><input id="workerCurp" class="step-input" type="text" autocomplete="off" placeholder="18 caracteres" maxlength="18" autocapitalize="characters">';
+                const input = document.getElementById('workerCurp'); input.value = captura.curp;
+                input.addEventListener('input', () => { input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,18); });
+            } else {
+                contenido.innerHTML = `<label for="workerRole">Puesto</label><select id="workerRole" class="step-input"><option value="" disabled>Selecciona un puesto</option>${PUESTOS_COMUNES.map(p => `<option value="${p}">${p}</option>`).join('')}</select><p class="hint" style="margin:8px 0 0">Toca la casilla para desplegar las 6 opciones.</p>`;
+                document.getElementById('workerRole').value = captura.puesto;
+            }
+            if (enfocar) { const input = contenido.querySelector('input,select'); if (input) { input.focus(); if (input.select && input.tagName === 'INPUT') input.select(); } }
+        }
+
+        function siguientePaso() {
+            if (paso === 0) {
+                const nombre = document.getElementById('workerName').value.trim();
+                if (!nombre) { alert('Escribe el nombre completo del trabajador.'); document.getElementById('workerName').focus(); return; }
+                captura.nombre = nombre.toUpperCase(); paso = 1; mostrarPaso(true); return;
+            }
+            if (paso === 1) {
+                const curp = document.getElementById('workerCurp').value.trim().toUpperCase();
+                if (!/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/.test(curp)) { alert('Verifica la CURP: debe tener 18 caracteres y un formato válido.'); document.getElementById('workerCurp').focus(); return; }
+                captura.curp = curp; captura.puesto = 'TÉCNICO EN MANTENIMIENTO'; paso = 2; mostrarPaso(true); return;
+            }
+            captura.puesto = document.getElementById('workerRole').value || 'TÉCNICO EN MANTENIMIENTO';
+            trabajadores.push({...captura});
+            captura = { nombre: '', curp: '', puesto: 'TÉCNICO EN MANTENIMIENTO' };
+            paso = 0; renderizarTrabajadores(); mostrarPaso(true);
+        }
+
+        function pasoAnterior() {
+            if (paso === 0) return;
+            if (paso === 2) captura.puesto = document.getElementById('workerRole').value;
+            if (paso === 1) captura.curp = document.getElementById('workerCurp').value.trim().toUpperCase();
+            paso--; mostrarPaso(true);
+        }
+
+        function eliminarTrabajador(indice) { trabajadores.splice(indice, 1); renderizarTrabajadores(); }
+
+        function generarDocumentos() {
+            const fInicio = obtenerDesgloseFecha(document.getElementById('fechaInicio').value);
+            const fFin = obtenerDesgloseFecha(document.getElementById('fechaFin').value);
+            const cursoSeleccionado = CATALOGO_CURSOS[document.getElementById('selectCurso').value] || CATALOGO_CURSOS[0];
+            const contenedor = document.getElementById('contenedorConstancias');
+            
+            contenedor.innerHTML = '';
+
+            if (paso !== 0 || document.getElementById('workerName').value.trim()) {
+                alert('Termina de agregar al trabajador actual antes de generar las constancias.');
+                return;
+            }
+            if (!trabajadores.length) {
+                alert('Agrega al menos un trabajador para generar las constancias.');
+                return;
+            }
+
+            trabajadores.forEach((trabajador, idx) => {
+                const { nombre, curp, puesto } = trabajador;
+                const nombreSeguro = escaparHTML(nombre);
+                const curpSeguro = escaparHTML(curp);
+                const puestoSeguro = escaparHTML(puesto);
+
+                const card = document.createElement('div');
+                card.className = 'dc3-container';
+                card.id = `dc3-card-${idx}`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="title-header">FORMATO DC-3</div>
+                        <div class="subtitle-header">CONSTANCIA DE COMPETENCIAS O DE HABILIDADES LABORALES</div>
+
+                        <!-- DATOS DEL TRABAJADOR -->
+                        <div class="section-header">DATOS DEL TRABAJADOR</div>
+                        <div class="box bg-trabajador">
+                            <div class="box-title">Nombre (Anotar apellido paterno, apellido materno y nombre (s))</div>
+                            <div class="box-value">${nombreSeguro}</div>
+                        </div>
+                        <div style="display: flex;">
+                            <div class="bg-trabajador" style="flex: 1.2; border-left: 1px solid #000; border-bottom: 1px solid #000; padding: 6px;">
+                                <div class="box-title">Clave Única de Registro de Población</div>
+                                ${formatearCeldas(curpSeguro, 18)}
+                            </div>
+                            <div class="bg-trabajador" style="flex: 1; border: 1px solid #000; border-top: none; padding: 6px;">
+                                <div class="box-title">Ocupación específica (Catálogo Nacional de Ocupaciones) 1/</div>
+                                <div class="box-value" style="font-size: 10.5px;">${DATOS_EMPRESA.ocupacion}</div>
+                            </div>
+                        </div>
+                        <div class="box bg-trabajador">
+                            <div class="box-title">Puesto*</div>
+                            <div class="box-value">${puestoSeguro}</div>
+                        </div>
+
+                        <!-- DATOS DE LA EMPRESA -->
+                        <div class="section-header">DATOS DE LA EMPRESA</div>
+                        <div class="box bg-empresa">
+                            <div class="box-title">Nombre o razón social (En caso de persona física, anotar apellido paterno, apellido materno y nombre(s))</div>
+                            <div class="box-value">${DATOS_EMPRESA.empresa}</div>
+                        </div>
+                        <div style="display: flex;">
+                            <div class="bg-empresa" style="flex: 1; border-left: 1px solid #000; border-bottom: 1px solid #000; padding: 6px;">
+                                <div class="box-title">Registro Federal de Contribuyentes con homoclave (SHCP)</div>
+                                <div style="margin-top: 3px;">
+                                    ${formatearCeldas(DATOS_EMPRESA.rfc, 13)}
+                                </div>
+                            </div>
+                            <div class="bg-empresa" style="flex: 1; border: 1px solid #000; border-top: none; padding: 6px;">
+                                <div class="box-title">Registro Patronal</div>
+                                <div class="box-value" style="margin-top: 4px; letter-spacing: 2px;">${DATOS_EMPRESA.registroPatronal}</div>
+                            </div>
+                        </div>
+
+                        <!-- DATOS DEL PROGRAMA DE CAPACITACION -->
+                        <div class="section-header">DATOS DEL PROGRAMA DE CAPACITACION, ADIESTRAMIENTO Y PRODUCTIVIDAD</div>
+                        <div class="box">
+                            <div class="box-title">Nombre del curso</div>
+                            <div class="box-value">${cursoSeleccionado.nombre}</div>
+                        </div>
+                        
+                        <div style="display: flex; border: 1px solid #000; border-top: none;">
+                            <div style="width: 25%; padding: 6px; border-right: 1px solid #000;">
+                                <div class="box-title">Duración en horas</div>
+                                <div class="box-value">${cursoSeleccionado.horas}</div>
+                            </div>
+                            <div style="width: 75%; padding: 6px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 10px; align-items: center;">
+                                    <span style="font-weight: bold;">Periodo de ejecución:</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;">
+                                        De 
+                                        ${formatearCeldas(fInicio.a, 4)}
+                                        ${formatearCeldas(fInicio.m, 2)}
+                                        ${formatearCeldas(fInicio.d, 2)}
+                                    </span>
+                                    <span style="display: flex; align-items: center; gap: 4px;">
+                                        A 
+                                        ${formatearCeldas(fFin.a, 4)}
+                                        ${formatearCeldas(fFin.m, 2)}
+                                        ${formatearCeldas(fFin.d, 2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box">
+                            <div class="box-title">Área temática del curso 2/</div>
+                            <div class="box-value">${cursoSeleccionado.area}</div>
+                        </div>
+                        <div class="box">
+                            <div class="box-title">Nombre del agente capacitador o STPS 3/</div>
+                            <div class="box-value">${DATOS_EMPRESA.capacitador}</div>
+                        </div>
+
+                        <!-- SECCIÓN DE FIRMAS TOTALMENTE BLANCAS Y LIMPIAS -->
+                        <div style="border: 1px solid #000; margin-top: 15px; padding: 8px; font-size: 9px; text-align: center; font-weight: bold; background-color: #ffffff;">
+                            Los datos se asientan en esta constancia bajo protesta de decir verdad, apercibidos de la responsabilidad en que incurre todo aquel que no se conduce con verdad.
+                            
+                            <table class="signatures-table">
+                                <tr>
+                                    <td>
+                                        <div class="signature-container"></div>
+                                        <div class="signature-line">Instructor o tutor<br><b>${DATOS_EMPRESA.capacitador}</b><br><span style="font-size: 8px; font-weight: normal;">Nombre y firma</span></div>
+                                    </td>
+                                    <td>
+                                        <div class="signature-container"></div>
+                                        <div class="signature-line">Patrón o representante legal 4/<br><b>${DATOS_EMPRESA.empresa}</b><br><span style="font-size: 8px; font-weight: normal;">Nombre y firma</span></div>
+                                    </td>
+                                    <td>
+                                        <div class="signature-container"></div>
+                                        <div class="signature-line">Representante de los trabajadores 5/<br><b>Nombre y firma</b></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- INSTRUCCIONES -->
+                    <div class="instructions">
+                        <b>INSTRUCCIONES</b><br>
+                        - Llenar a máquina o con letra de molde.<br>
+                        - Deberá entregarse al trabajador dentro de los veinte días hábiles siguientes al término del curso de capacitación aprobado.<br>
+                        1/ Las áreas y subáreas ocupacionales del Catálogo Nacional de Ocupaciones se encuentran disponibles en el reverso de este formato y en la página www.stps.gob.mx<br>
+                        2/ Las áreas temáticas de los cursos se encuentran disponibles en el reverso de este formato y en la página www.stps.gob.mx<br>
+                        3/ Cursos impartidos por el área competente de la Secretaría del Trabajo y Previsión Social.<br>
+                        4/ Para empresas con menos de 51 trabajadores. Para empresas con más de 50 trabajadores firmaría el representante del patrón ante la Comisión mixta de capacitación, adiestramiento y productividad.<br>
+                        5/ Solo para empresas con más de 50 trabajadores.
+                    </div>
+                `;
+
+                contenedor.appendChild(card);
+            });
+        }
+
+        async function descargarPDFs() {
+            const constancias = document.querySelectorAll('.dc3-container');
+            if (constancias.length === 0) {
+                alert('Primero haz clic en "Generar Vista Previa".');
+                return;
+            }
+
+            for (let i = 0; i < constancias.length; i++) {
+                const elemento = constancias[i];
+                const nombreEmpleado = elemento.querySelector('.box-value').innerText || `Constancia_${i+1}`;
+                
+                const opt = {
+                    margin:       0,
+                    filename:     `DC3_${nombreEmpleado.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                await html2pdf().set(opt).from(elemento).save();
+            }
+        }
+
+        // Cargar catálogo y preparar la captura guiada al abrir la página
+        window.onload = () => { cargarCatalogoCursos(); renderizarTrabajadores(); mostrarPaso(true); };
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && ['workerName', 'workerCurp'].includes(event.target.id)) {
+                event.preventDefault(); siguientePaso();
+            }
+        });
+    </script>
+</body>
+</html>
