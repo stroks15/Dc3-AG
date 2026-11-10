@@ -159,8 +159,9 @@
             <div><label>Fecha de Término del Curso:</label><input type="date" id="fechaFin" value="2026-01-25"></div>
             <div><label>Seleccionar Curso DC-3:</label><select id="selectCurso"></select></div>
         </div>
+        <div id="globalRoleWrap" class="hidden" style="margin:12px 0"><label for="globalRole">Puesto común para todos</label><select id="globalRole" class="step-input"></select></div>
 
-        <div id="modePanel" class="mode-panel hidden wizard-page"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button id="scopeGlobal" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('global')" ondblclick="elegirAlcance('global'); continuarAlcance()"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button id="scopeIndividual" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('individual')" ondblclick="elegirAlcance('individual'); continuarAlcance()"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><div id="globalRoleWrap" class="hidden" style="margin-top:12px"><label for="globalRole">Puesto común</label><select id="globalRole" class="step-input"></select></div><p class="hint" style="margin:12px 0 0">Selecciona una opción para abrir la captura.</p></div>
+        <div id="modePanel" class="mode-panel hidden wizard-page"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button id="scopeGlobal" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('global')"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button id="scopeIndividual" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('individual')"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><p class="hint" style="margin:12px 0 0">Selecciona una opción para abrir la captura.</p></div>
 <div id="ineUploadPanel" class="mode-panel hidden"><label for="ineFiles">Fotografías de INE (una imagen por trabajador)</label><input id="ineFiles" type="file" accept="image/*" multiple><p style="font-size:12px;color:#475569">El OCR se ejecuta en este navegador. Las imágenes no se envían a un servidor. Revisa los datos detectados.</p><button type="button" class="btn" onclick="procesarINEs()">Leer datos de las INE</button><span id="ocrStatus" aria-live="polite"></span><div id="inePreview" class="ine-preview"></div></div>
         <section id="workerEntry" class="worker-entry hidden" aria-label="Captura de trabajadores">
             <h3>Datos de los trabajadores</h3>
@@ -329,6 +330,7 @@
             document.getElementById('modePanel').classList.add('hidden');
             document.getElementById('mainPanel').classList.remove('hidden');
             document.getElementById('courseGlobalFields').classList.toggle('hidden',alcanceDatos!=='global');
+            document.getElementById('globalRoleWrap').classList.toggle('hidden',alcanceDatos!=='global');
             document.getElementById('ineUploadPanel').classList.toggle('hidden',metodoCaptura!=='ine');
             document.getElementById('workerEntry').classList.toggle('hidden',metodoCaptura==='ine');
             document.getElementById('formFooter').classList.remove('hidden');
