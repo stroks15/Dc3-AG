@@ -150,7 +150,7 @@
 </head>
 <body>
 
-    <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle"><div class="welcome-card"><h2 id="welcomeTitle">Bienvenido al generador DC-3</h2><p>¿Cómo deseas registrar a los trabajadores?</p><div class="choice-grid"><button id="methodIne" class="choice-card" type="button" aria-pressed="false" onclick="elegirMetodo('ine')"><strong>📷 Usar fotografía de INE</strong><span>Una imagen por trabajador. El navegador intentará leer nombre y CURP.</span></button><button id="methodManual" class="choice-card" type="button" aria-pressed="false" onclick="elegirMetodo('manual')"><strong>⌨️ Captura manual</strong><span>Continuar con el formulario de captura existente.</span></button></div><p id="methodHint" class="hint" aria-live="polite">Selecciona una opción para habilitar el botón Continuar.</p><div class="step-actions" style="justify-content:flex-end;margin-top:18px"><button id="continueMethod" class="btn" type="button" disabled onclick="continuarMetodo()">Continuar</button></div></div></div>
+    <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle"><div class="welcome-card"><h2 id="welcomeTitle">Bienvenido al generador DC-3</h2><p>¿Cómo deseas registrar a los trabajadores?</p><div class="choice-grid"><button id="methodIne" class="choice-card" type="button" aria-pressed="false" onclick="elegirMetodo('ine')" ondblclick="elegirMetodo('ine'); continuarMetodo()"><strong>📷 Usar fotografía de INE</strong><span>Una imagen por trabajador. El navegador intentará leer nombre y CURP.</span></button><button id="methodManual" class="choice-card" type="button" aria-pressed="false" onclick="elegirMetodo('manual')" ondblclick="elegirMetodo('manual'); continuarMetodo()"><strong>⌨️ Captura manual</strong><span>Continuar con el formulario de captura existente.</span></button></div><p id="methodHint" class="hint" aria-live="polite">Selecciona una opción para habilitar el botón Continuar.</p><div class="step-actions" style="justify-content:flex-end;margin-top:18px"><button id="continueMethod" class="btn" type="button" disabled onclick="continuarMetodo()">Continuar</button></div></div></div>
     <!-- Panel de captura guiada -->
     <div class="panel">
         <h2>Generador de Constancias DC-3</h2>
@@ -160,7 +160,7 @@
             <div><label>Seleccionar Curso DC-3:</label><select id="selectCurso"></select></div>
         </div>
 
-        <div id="modePanel" class="mode-panel hidden"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button id="scopeGlobal" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('global')"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button id="scopeIndividual" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('individual')"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><div id="globalRoleWrap" class="hidden" style="margin-top:12px"><label for="globalRole">Puesto común</label><select id="globalRole" class="step-input"></select></div><div class="step-actions" style="justify-content:flex-end;margin-top:14px"><button id="continueScope" class="btn" type="button" disabled onclick="continuarAlcance()">Continuar</button></div></div>
+        <div id="modePanel" class="mode-panel hidden"><strong>¿Cómo manejarás los datos del curso?</strong><div class="choice-grid"><button id="scopeGlobal" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('global')" ondblclick="elegirAlcance('global'); continuarAlcance()"><strong>Datos globales</strong><span>Una fecha, curso y puesto para todos.</span></button><button id="scopeIndividual" class="choice-card" type="button" aria-pressed="false" onclick="elegirAlcance('individual')" ondblclick="elegirAlcance('individual'); continuarAlcance()"><strong>Por trabajador</strong><span>Captura individual por cada persona.</span></button></div><div id="globalRoleWrap" class="hidden" style="margin-top:12px"><label for="globalRole">Puesto común</label><select id="globalRole" class="step-input"></select></div><div class="step-actions" style="justify-content:flex-end;margin-top:14px"><button id="continueScope" class="btn" type="button" disabled onclick="continuarAlcance()">Continuar</button></div></div>
 <div id="ineUploadPanel" class="mode-panel hidden"><label for="ineFiles">Fotografías de INE (una imagen por trabajador)</label><input id="ineFiles" type="file" accept="image/*" multiple><p style="font-size:12px;color:#475569">El OCR se ejecuta en este navegador. Las imágenes no se envían a un servidor. Revisa los datos detectados.</p><button type="button" class="btn" onclick="procesarINEs()">Leer datos de las INE</button><span id="ocrStatus" aria-live="polite"></span><div id="inePreview" class="ine-preview"></div></div>
         <section id="workerEntry" class="worker-entry" aria-label="Captura de trabajadores">
             <h3>Datos de los trabajadores</h3>
@@ -300,6 +300,27 @@
             document.getElementById('continueMethod').disabled = false;
             document.getElementById('methodHint').textContent = metodo === 'ine' ? 'Elegiste fotografía de INE. Pulsa Continuar para configurar los datos.' : 'Elegiste captura manual. Pulsa Continuar para configurar los datos.';
         }
+
+        // Refuerzo de interacción: mantiene habilitado Continuar al seleccionar una opción,
+        // incluso si el navegador móvil no procesa correctamente el atributo onclick.
+        document.addEventListener('DOMContentLoaded', () => {
+            ['methodIne','methodManual'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('click', () => {
+                    const selected = document.getElementById('continueMethod');
+                    if (selected) selected.disabled = false;
+                });
+            });
+            ['scopeGlobal','scopeIndividual'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('click', () => {
+                    const selected = document.getElementById('continueScope');
+                    if (selected) selected.disabled = false;
+                });
+            });
+        });
 
         function continuarMetodo() {
             if (!metodoCaptura) { alert('Primero selecciona fotografía de INE o captura manual.'); return; }
