@@ -410,6 +410,8 @@
                 alert('Agrega al menos un trabajador para generar las constancias.');
                 return;
             }
+            const incompletos=trabajadores.filter(t=>!t.nombre||!t.curp||!/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/.test(t.curp));
+            if(incompletos.length){alert('Revisa nombre y CURP de todos los trabajadores. La CURP debe tener 18 caracteres válidos.');return;}
 
             trabajadores.forEach((trabajador, idx) => {
                 const { nombre, curp, puesto } = trabajador;
