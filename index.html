@@ -153,7 +153,7 @@
     <!-- Panel de captura guiada -->
     <div class="panel">
         <h2>Generador de Constancias DC-3</h2>
-        <div class="grid-3col">
+        <div id="courseGlobalFields" class="grid-3col">
             <div><label>Fecha de Inicio del Curso:</label><input type="date" id="fechaInicio" value="2026-01-10"></div>
             <div><label>Fecha de Término del Curso:</label><input type="date" id="fechaFin" value="2026-01-25"></div>
             <div><label>Seleccionar Curso DC-3:</label><select id="selectCurso"></select></div>
@@ -301,6 +301,7 @@
             document.getElementById('globalRoleWrap').classList.toggle('hidden', alcance !== 'global');
             if (!role.options.length) PUESTOS_COMUNES.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p; role.appendChild(o); });
             document.getElementById('workerEntry').classList.toggle('hidden', metodoCaptura === 'ine');
+            document.getElementById('courseGlobalFields').classList.toggle('hidden', alcance !== 'global');
             if (alcance === 'global') datosGlobales = { fechaInicio:document.getElementById('fechaInicio').value, fechaFin:document.getElementById('fechaFin').value, curso:document.getElementById('selectCurso').value };
             mostrarPaso(false);
         }
@@ -310,6 +311,22 @@
             lista.innerHTML = trabajadores.map((t, i) => `
                 <div class="worker-chip" style="align-items:flex-start"><div style="flex:1;min-width:0"><strong>${i + 1}. Datos del trabajador</strong><label>Nombre completo</label><input class="step-input" style="min-height:38px;font-size:14px;padding:8px" value="${escaparHTML(t.nombre)}" oninput="actualizarTrabajador(${i},'nombre',this.value)"><label style="margin-top:7px">CURP</label><input class="step-input" style="min-height:38px;font-size:14px;padding:8px" maxlength="18" value="${escaparHTML(t.curp)}" oninput="actualizarTrabajador(${i},'curp',this.value.toUpperCase())"><small>Puesto: ${escaparHTML(t.puesto)}</small></div><button type="button" onclick="eliminarTrabajador(${i})" aria-label="Eliminar trabajador ${i + 1}">Quitar</button></div>
             `).join('');
+            if (alcanceDatos === 'individual') {
+                lista.querySelectorAll('.worker-chip').forEach((chip,i) => {
+                    const t=trabajadores[i], controls=document.createElement('div');
+                    controls.className='grid-3col'; controls.style.marginTop='8px';
+                    const start=document.createElement('input'); start.type='date'; start.value=t.fechaInicio||'';
+                    start.addEventListener('change',()=>{t.fechaInicio=start.value;});
+                    const end=document.createElement('input'); end.type='date'; end.value=t.fechaFin||'';
+                    end.addEventListener('change',()=>{t.fechaFin=end.value;});
+                    const course=document.createElement('select');
+                    CATALOGO_CURSOS.forEach((c,j)=>{const o=document.createElement('option');o.value=String(j);o.textContent=c.nombre;o.selected=String(t.curso||0)===String(j);course.appendChild(o);});
+                    course.addEventListener('change',()=>{t.curso=course.value;});
+                    const wrap1=document.createElement('div'),wrap2=document.createElement('div'),wrap3=document.createElement('div');
+                    wrap1.append('Inicio del curso',start);wrap2.append('Término del curso',end);wrap3.append('Curso',course);
+                    controls.append(wrap1,wrap2,wrap3);chip.firstElementChild.appendChild(controls);
+                });
+            }
             document.getElementById('workerCount').textContent = trabajadores.length ? `${trabajadores.length} trabajador${trabajadores.length === 1 ? '' : 'es'} agregado${trabajadores.length === 1 ? '' : 's'}` : 'Aún no has agregado trabajadores.';
         }
 
@@ -353,11 +370,11 @@
                 const curp = document.getElementById('workerCurp').value.trim().toUpperCase();
                 if (!/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/.test(curp)) { alert('Verifica la CURP: debe tener 18 caracteres y un formato válido.'); document.getElementById('workerCurp').focus(); return; }
                 captura.curp = curp;
-                if (alcanceDatos === 'global') { captura.puesto=document.getElementById('globalRole').value || 'TÉCNICO EN MANTENIMIENTO'; trabajadores.push({...captura}); ineFilesPorTrabajador.push(null); captura={nombre:'',curp:'',puesto:'TÉCNICO EN MANTENIMIENTO'}; paso=0; renderizarTrabajadores(); mostrarPaso(true); return; }
+                if (alcanceDatos === 'global') { captura.puesto=document.getElementById('globalRole').value || 'TÉCNICO EN MANTENIMIENTO'; trabajadores.push({...captura,fechaInicio:document.getElementById('fechaInicio').value,fechaFin:document.getElementById('fechaFin').value,curso:document.getElementById('selectCurso').value}); ineFilesPorTrabajador.push(null); captura={nombre:'',curp:'',puesto:'TÉCNICO EN MANTENIMIENTO'}; paso=0; renderizarTrabajadores(); mostrarPaso(true); return; }
                 captura.puesto = 'TÉCNICO EN MANTENIMIENTO'; paso = 2; mostrarPaso(true); return;
             }
             captura.puesto = alcanceDatos === 'global' ? (document.getElementById('globalRole').value || 'TÉCNICO EN MANTENIMIENTO') : (document.getElementById('workerRole').value || 'TÉCNICO EN MANTENIMIENTO');
-            trabajadores.push({...captura});
+            trabajadores.push({...captura,fechaInicio:document.getElementById('fechaInicio').value,fechaFin:document.getElementById('fechaFin').value,curso:document.getElementById('selectCurso').value});
             ineFilesPorTrabajador.push(null);
             captura = { nombre: '', curp: '', puesto: 'TÉCNICO EN MANTENIMIENTO' };
             paso = 0; renderizarTrabajadores(); mostrarPaso(true);
@@ -385,7 +402,7 @@
                 const lines=upper.split(/\r?\n/).map(x=>x.trim()).filter(x=>x.length>5);
                 const nombre=lines.find(x=>/^[A-ZÁÉÍÓÚÑ ]{8,}$/.test(x)&&!/MEXICO|INSTITUTO|ELECTORAL|NACIONAL|CREDENCIAL|VOTAR/.test(x))||'';
                 const puesto=alcanceDatos==='global'?(document.getElementById('globalRole').value):'TÉCNICO EN MANTENIMIENTO';
-                trabajadores.push({nombre:nombre,curp:curp,puesto:puesto}); ineFilesPorTrabajador.push(file);
+                trabajadores.push({nombre:nombre,curp:curp,puesto:puesto,fechaInicio:document.getElementById('fechaInicio').value,fechaFin:document.getElementById('fechaFin').value,curso:document.getElementById('selectCurso').value}); ineFilesPorTrabajador.push(file);
                 const card=document.createElement('div'); card.className='ine-item'; const img=document.createElement('img'); img.src=url; img.alt='Vista previa de INE';
                 const info=document.createElement('div'); info.textContent='INE '+(i+1)+': '+(nombre||'Nombre por revisar')+' · CURP: '+(curp||'No detectada'); card.append(img,info); preview.appendChild(card);
             }
@@ -395,9 +412,6 @@
         }
 
         function generarDocumentos() {
-            const fInicio = obtenerDesgloseFecha(document.getElementById('fechaInicio').value);
-            const fFin = obtenerDesgloseFecha(document.getElementById('fechaFin').value);
-            const cursoSeleccionado = CATALOGO_CURSOS[document.getElementById('selectCurso').value] || CATALOGO_CURSOS[0];
             const contenedor = document.getElementById('contenedorConstancias');
             
             contenedor.innerHTML = '';
@@ -414,6 +428,9 @@
             if(incompletos.length){alert('Revisa nombre y CURP de todos los trabajadores. La CURP debe tener 18 caracteres válidos.');return;}
 
             trabajadores.forEach((trabajador, idx) => {
+                const fInicio=obtenerDesgloseFecha(alcanceDatos==='global'?document.getElementById('fechaInicio').value:(trabajador.fechaInicio||''));
+                const fFin=obtenerDesgloseFecha(alcanceDatos==='global'?document.getElementById('fechaFin').value:(trabajador.fechaFin||''));
+                const cursoSeleccionado=CATALOGO_CURSOS[alcanceDatos==='global'?document.getElementById('selectCurso').value:trabajador.curso]||CATALOGO_CURSOS[0];
                 const { nombre, curp, puesto } = trabajador;
                 const nombreSeguro = escaparHTML(nombre);
                 const curpSeguro = escaparHTML(curp);
