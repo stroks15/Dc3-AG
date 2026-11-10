@@ -139,6 +139,7 @@
             line-height: 1.35;
         }
 
+        .welcome-overlay{position:fixed;inset:0;background:rgba(15,23,42,.75);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}.welcome-card{width:min(620px,100%);background:#fff;border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(0,0,0,.3)}.welcome-card h2{margin:0 0 8px}.welcome-card p{color:#475569;line-height:1.5}.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.choice-card{border:1px solid #cbd5e1;background:#f8fafc;border-radius:12px;padding:16px;text-align:left;cursor:pointer}.choice-card strong{display:block;color:#172554;margin-bottom:6px}.choice-card span{font-size:13px;color:#475569}.choice-card:hover{border-color:#2563eb;background:#eff6ff}.mode-panel{border:1px solid #bfdbfe;background:#eff6ff;padding:14px;border-radius:12px;margin:14px 0}.hidden{display:none!important}.ine-preview{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}.ine-item{border:1px solid #cbd5e1;border-radius:9px;padding:8px;background:#fff;font-size:12px}.ine-item img{width:100%;height:90px;object-fit:contain;background:#f1f5f9}@media(max-width:650px){.choice-grid{grid-template-columns:1fr}.welcome-card{padding:20px}}
         @media print {
             .panel { display: none; }
             body { background: white; padding: 0; }
@@ -148,6 +149,7 @@
 </head>
 <body>
 
+    <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true"><div class="welcome-card"><h2>Bienvenido al generador DC-3</h2><p>¿Cómo deseas registrar a los trabajadores?</p><div class="choice-grid"><button class="choice-card" type="button" onclick="elegirMetodo('ine')"><strong>📷 Usar fotografía de INE</strong><span>Una imagen por trabajador. El navegador intentará leer nombre y CURP.</span></button><button class="choice-card" type="button" onclick="elegirMetodo('manual')"><strong>⌨️ Captura manual</strong><span>Continuar con el formulario de captura existente.</span></button></div></div></div>
     <!-- Panel de captura guiada -->
     <div class="panel">
         <h2>Generador de Constancias DC-3</h2>
